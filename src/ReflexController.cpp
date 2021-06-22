@@ -1,5 +1,5 @@
 /* -------------------------------------------------------------------------- *
- *                      OpenSim:  MuscleFiberStretchController.cpp                             *
+ *                      OpenSim:  ReflexController.cpp                             *
  * -------------------------------------------------------------------------- *
  * The OpenSim API is a toolkit for musculoskeletal modeling and simulation.  *
  * See http://opensim.stanford.edu and the NOTICE file for more information.  *
@@ -30,7 +30,7 @@
 // This line includes a large number of OpenSim functions and classes so that
 // those things will be available to this program.
 #include <OpenSim/OpenSim.h>
-#include "MuscleFiberStretchController.h"
+#include "ReflexController.h"
 
 // This allows us to use OpenSim functions, classes, etc., without having to
 // prefix the names of those things with "OpenSim::".
@@ -44,21 +44,17 @@ using namespace SimTK;
 //=============================================================================
 //_____________________________________________________________________________
 /* Default constructor. */
-/*
-MuscleFiberStretchController::MuscleFiberStretchController()
+ReflexController::ReflexController()
 {
-	//constructProperties();
+	constructProperties();
 }
-*/
 
 /* Convenience constructor. */
-/*
-MuscleFiberStretchController::MuscleFiberStretchController(double gain)
+ReflexController::ReflexController(double gain)
 {
 	constructProperties();
 	set_gain(gain);
 }
-*/
 
 
 //=============================================================================
@@ -74,26 +70,37 @@ MuscleFiberStretchController::MuscleFiberStretchController(double gain)
  *
  * All properties are added to the property set. Once added, they can be
  * read in and written to files.
- ____________________________________________________________________________
+ ____________________________________________________________________________*/
 
 
  /**
  * Construct Properties
  */
-/*
-void MuscleFiberStretchController::constructProperties()
+void ReflexController::constructProperties()
 {
-	
+	constructProperty_gain(1.0);
 }
-*/
 
-/*
-void MuscleFiberStretchController::connectToModel(Model &model)
+void ReflexController::connectToModel(Model &model)
 {
 	Super::connectToModel(model);
 
+	// get the list of actuators assigned to the reflex controller
+    Set<const Actuator>& actuators = updActuators();
+
+	int cnt=0;
+ 
+	while(cnt < actuators.getSize()){
+        const Muscle *musc = dynamic_cast<const Muscle*>(&actuators[cnt]);
+		// control muscles only
+		if(!musc){
+			cout << "ReflexController:: WARNING- controller assigned a non-muscle actuator ";
+			cout << actuators[cnt].getName() << " which will be ignored." << endl;
+			actuators.remove(cnt);
+		}else
+			cnt++;
+	}
 }
-*/
 
 //=============================================================================
 // COMPUTATIONS
@@ -105,45 +112,29 @@ void MuscleFiberStretchController::connectToModel(Model &model)
  * @param s			current state of the system
  * @param controls	system wide controls to which this controller can add
  */
-void MuscleFiberStretchController::computeControls(const State& s, Vector &controls) const
+void ReflexController::computeControls(const State& s, Vector &controls) const
 {	
 	// get time
 	double time = s.getTime();
 
 	// get the list of actuators assigned to the reflex controller
-	const Set<Actuator>& actuators = getActuatorSet();
+    const Set<const Actuator>& actuators = getActuatorSet();
 
-	// save resused controller parameter
-	double rest_length = get_normalized_rest_length();
-	double k_l = get_gain_length();
-	double k_v = get_gain_velocity();
-
-	// muscle optimal fiber length
-	double f_o = 1;
-	// fiber length
-	double length = 0;
-	// fiber stretch
-	double stretch;
-	// fiber lengthening speed
+	// muscle lengthening speed
 	double speed = 0;
 	// max muscle lengthening (stretch) speed
 	double max_speed = 0;
 	//reflex control
 	double control = 0;
 
-	for (int i = 0; i < actuators.getSize(); ++i){
+	for(int i=0; i<actuators.getSize(); ++i){
 		const Muscle *musc = dynamic_cast<const Muscle*>(&actuators[i]);
-		f_o = musc->getOptimalFiberLength();
-		length = musc->getFiberLength(s);
-		stretch = length - get_normalized_rest_length()*f_o;
-		// only positive stretch, normalized by optimal fiber length is used
-		control = get_gain_length() * 0.5*(fabs(stretch) + stretch) / f_o;
-		speed = musc->getFiberVelocity(s);
+		speed = musc->getLengtheningSpeed(s);
 		// unnormalize muscle's maximum contraction velocity (fib_lengths/sec) 
-		max_speed = f_o*musc->getMaxContractionVelocity();
-		control += 0.5*get_gain_velocity()*(fabs(speed) + speed) / max_speed;
+		max_speed = musc->getOptimalFiberLength()*musc->getMaxContractionVelocity();
+		control = 0.5*get_gain()*(fabs(speed)+speed)/max_speed;
 
-		SimTK::Vector actControls(1, control);
+		SimTK::Vector actControls(1,control);
 		// add reflex controls to whatever controls are already in place.
 		musc->addInControls(actControls, controls);
 	}

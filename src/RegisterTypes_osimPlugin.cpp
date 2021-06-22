@@ -46,6 +46,7 @@ OSIMREFLEXES_API void RegisterTypes_osimReflexesPlugin()
 	Object::RegisterType(MusclePathStretchController());
 	Object::RegisterType(MuscleFiberStretchController());
     Object::RegisterType(DelayedPathReflexController());
+    OpenSim::log_info("Loaded osimReflexesPlugin");
 }
 
 dllObjectInstantiator::dllObjectInstantiator() 

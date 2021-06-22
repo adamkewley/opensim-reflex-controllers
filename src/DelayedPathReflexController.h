@@ -27,12 +27,12 @@
 //============================================================================
 // INCLUDE
 //============================================================================
-#include "OpenSim\Simulation\Control\Controller.h"
-#include "OpenSim\Common\PiecewiseLinearFunction.h"
-#include "OpenSim\Simulation\Model\Model.h"
+#include <OpenSim/Simulation/Control/Controller.h>
+#include <OpenSim/Common/PiecewiseLinearFunction.h>
+#include <OpenSim/Simulation/Model/Model.h>
 
 // to export class as part of a plugin:
-#include "osimReflexesDLL.h" 
+#include "osimReflexesDLL.h"
 
 namespace OpenSim {
 
@@ -96,8 +96,6 @@ namespace OpenSim {
 	private:
 		// Connect properties to local pointers.  */
 		void constructProperties();
-		// ModelComponent interface to add computational elements to the SimTK system
-		void addToSystem(SimTK::MultibodySystem& system) const;
 		// ModelComponent interface to connect this component to its model
 		void connectToModel(Model& aModel);
 		//=============================================================================

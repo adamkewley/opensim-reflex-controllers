@@ -32,9 +32,6 @@
 // This allows us to use OpenSim functions, classes, etc., without having to
 // prefix the names of those things with "OpenSim::".
 using namespace OpenSim;
-using namespace std;
-using namespace SimTK;
-
 
 //=============================================================================
 // CONSTRUCTOR(S) AND DESTRUCTOR
@@ -64,44 +61,31 @@ void DelayedPathReflexController::constructProperties()
 	constructProperty_delay(0.0);
 }
 
-void DelayedPathReflexController::addToSystem(SimTK::MultibodySystem& system) const
-{
-	Super::addToSystem(system);
-	DelayedPathReflexController* mutableThis = const_cast<DelayedPathReflexController *>(this);
-
-	
-
-	
-
-}
 void DelayedPathReflexController::connectToModel(Model &model)
 {
 	Super::connectToModel(model);
-	// get the list of actuators assigned to the reflex controller
-	Set<Actuator>& actuators = updActuators();
+
+    Set<const Actuator>& actuators = updActuators();
 	muscleStretchVelocityHistory.setSize(0);
 	muscleStretchVelocityHistory.setMemoryOwner(true);
 
-	int cnt = 0;
+    for (int i = 0; i < actuators.getSize(); ++i) {
+        const Actuator& act = actuators[i];
+        const Muscle* maybeMusc = dynamic_cast<const Muscle*>(&act);
 
-	while (cnt < actuators.getSize()){
-		Muscle *musc = dynamic_cast<Muscle*>(&actuators[cnt]);
-		// control muscles only
-		if (!musc){
-			cout << "DelayedPathReflexController:: WARNING- controller assigned a non-muscle actuator ";
-			cout << actuators[cnt].getName() << " which will be ignored." << endl;
-			actuators.remove(cnt);
-		}
-		else
-		{
-			PiecewiseLinearFunction muscleVelocity;
-			muscleVelocity.setName(musc->getName());
-			muscleStretchVelocityHistory.cloneAndAppend(muscleVelocity);
-			cnt++;
-		}
-	}
-
-
+        if (maybeMusc) {
+            const Muscle& musc = *maybeMusc;
+            PiecewiseLinearFunction muscleVelocity;
+            muscleVelocity.setName(musc.getName());
+            muscleStretchVelocityHistory.cloneAndAppend(muscleVelocity);
+        } else {
+            // remove non-muscle actuators
+            std::cout << "DelayedPathReflexController:: WARNING- controller assigned a non-muscle actuator "
+                      << act.getName() << " which will be ignored."
+                      << std::endl;
+            actuators.remove(i--);
+        }
+    }
 }
 
 //=============================================================================
@@ -123,14 +107,14 @@ void DelayedPathReflexController::connectToModel(Model &model)
 * @param s			current state of the system
 * @param controls	system wide controls to which this controller can add
 */
-void DelayedPathReflexController::computeControls(const State& s, Vector &controls) const
+void DelayedPathReflexController::computeControls(const SimTK::State& s, SimTK::Vector& controls) const
 {
 	//this->realizeDynamics(s);
 	// get time
 	double time = s.getTime();
 
 	// get the list of actuators assigned to the reflex controller
-	const Set<Actuator>& actuators = getActuatorSet();
+    const Set<const Actuator>& actuators = getActuatorSet();
 
 	/**/
 	// First must determine each muscles lengthening speed and store it in the measure's result
@@ -146,7 +130,7 @@ void DelayedPathReflexController::computeControls(const State& s, Vector &contro
 
 	//SimTK::Vector normalized_speeds(actuators.getSize()), delayed_speeds(actuators.getSize());
 	
-	for (int i = 0; i < actuators.getSize(); ++i){
+    for (int i = 0; i < actuators.getSize(); ++i) {
 		const Muscle *musc = dynamic_cast<const Muscle*>(&actuators[i]);
 		speed = musc->getLengtheningSpeed(s);
 		// unnormalize muscle's maximum contraction velocity (fib_lengths/sec) 
@@ -168,7 +152,4 @@ void DelayedPathReflexController::computeControls(const State& s, Vector &contro
 		// add reflex controls to whatever controls are already in place.
 		musc->addInControls(actControls, controls);
 	}
-
-	
 }
-
