@@ -1,52 +1,58 @@
-#**opensim-reflex-controllers**
+# opensim-reflex-controllers
 
-An OpenSim plugin creating various reflex-like controllers for muscles.  Types of reflexes include:
+> An OpenSim plugin creating various reflex-like controllers for muscles
+
+Supported reflexes include:
 
 1. Path Stretch Reflexes (length and velocity)
 2. Fiber Stretch Reflexes (length and velocity)
 3. Delayed stretch reflexes (constant time offset)
 
-###Dependencies
-1. OpenSim 3.2 or above by [installing a distribution](https://simtk.org/home/opensim) or [building from source](https://github.com/opensim-org/opensim-core)
-2. a git client
-3. Source code (git clone https://github.com/msdemers/opensim-reflex-controllers)
-4. [CMake](http://www.cmake.org/)
 
-###Building Steps
+# Building
 
-####Linux (assuming you have gcc and/or clang)
-1. build/install OpenSim. I'll call the install location ~/OpenSim_Install
-2. Creat a directories for cloning and building the opensim-reflex-controllers library
-```
-$ mkdir ~/reflexes
-$ cd ~/reflexes
-```
-3. If you haven't yet, clone this repository, for example to ~/reflexes/source
-```
-$ git clone https://github.com/msdemers/opensim-reflex-controllers ~/reflexes/source
-```
-you can optionally check out a specific branch
-```
-$ git checkout reflexes-3.2
-```
-4. Create a place to build the reflexes library
-```
-$ mkdir build
-```
-5. Run CMake, choosing the IDE project system of your choice, or simply UNIX Make Files will serve fine.
-  1. point at ~/reflexes/source/plugin for the source directory. This is where the high-level CMakeLists.txt lives
-  2. point at ~/reflexes/build for the build directory
-  3. Check the OPENSIM_INSTALL_DIR variable.  If CMake hasn't automatically detected it, point this variable to your OpenSim installation (e.g. ~/OpenSim_Install)
-  4. push *Configure* untill nothing appears red
-  5. push *Generate*
-  
-6. Navigate to the build directory
-```
-$ cd build
-```
-7. Build the project. This may mean opening your IDE or using your favorite command line build tools.  If using make files.
-```
-make install
+Dependencies:
+
+- A standard C/C++ compiler (clang, MSVC, gcc)
+- CMake
+- OpenSim ([binaries](https://simtk.org/home/opensim), [source](https://github.com/opensim-org/opensim-core))
+- (I built this against OpenSim4.2)
+
+Build Scripts:
+
+(read these if you know what you are doing)
+
+| OS | Build Script |
+| - | - |
+| OSX | scripts/build_osx-catalina.sh |
+
+
+# Running
+
+Once you have built the library, you will can use it at the command line
+(`opensim-cmd`) like:
+
+```bash
+opensim-cmd -L /path/to/library.so <cmd>
 ```
 
-After building the install project, plugin libraries and headers for this project will have been build and copied into the opensim plugins and sdk directories. You can either import the reflexesController.so (.dylib for OS X, .dll for Windows) into the gui, or build your own opensim projects as if the reflex controller plugin were native to OpenSim.
+Or in the GUI, which has some platform-dependent steps:
+
+- Windows: copy the library into the `plugins/` directory in your OpenSim
+  install directory (e.g. `C:\OpenSim 4.2\plugins`). Make the `plugins/`
+  directory if it doesn't already exist. Once you copy it there, boot up the
+  GUI. You should be able to see the plugin in `Tools > User Plugins`
+
+- Mac/Linux: boot up the GUI and use the ScriptingShell to load the plugin. Open
+  the ScriptingShell tab (near the bottom) and type the path to the library
+  **without the file suffix (e.g. .dylib)**:
+
+```
+modeling.Model.LoadOpenSimLibrary("/path/to/library")
+
+# e.g. modeling.Model.LoadOpenSimLibrary("/Applications/OpenSim 4.2/plugins/libReflexControllersPlugin")
+```
+
+- Mac/Linux (cont.): any loading errors will appear in the (separate) `Messages`
+  tab. Check there if there's a problem
+
