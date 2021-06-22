@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.5)
 
-project(ReflexControllersPlugin)
+project(ReflexControllersPlugin LANGUAGES CXX)
 
 cmake_policy(SET CMP0012 NEW)
 
@@ -74,6 +74,7 @@ set_target_properties(ReflexControllersPlugin PROPERTIES
     DEFINE_SYMBOL OSIMREFLEX_EXPORT
     PROJECT_LABEL "Libraries - ReflexControllerPlugin"
 )
+target_compile_features(ReflexControllersPlugin PUBLIC cxx_std_11)
 
 # if the developer runs 'install', then install the plugin into OpenSim's plugin
 # dir

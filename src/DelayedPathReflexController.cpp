@@ -78,7 +78,7 @@ void DelayedPathReflexController::connectToModel(Model &model)
 {
 	Super::connectToModel(model);
 	// get the list of actuators assigned to the reflex controller
-	Set<Actuator>& actuators = updActuators();
+    Set<const Actuator>& actuators = updActuators();
 	muscleStretchVelocityHistory.setSize(0);
 	muscleStretchVelocityHistory.setMemoryOwner(true);
 
