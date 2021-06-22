@@ -2,7 +2,9 @@
 
 > An OpenSim plugin creating various reflex-like controllers for muscles
 
-Supported reflexes include:
+This is a fork of [msdemers/opensim-reflex-controllers](https://github.com/msdemers/opensim-reflex-controllers) 
+that I updated to ensure it compiles against OpenSim 4.2 on Mac OSX. It is an OpenSim 
+plugin that adds support for the following reflex `OpenSim::Controller`s:
 
 1. Path Stretch Reflexes (length and velocity)
 2. Fiber Stretch Reflexes (length and velocity)
@@ -15,16 +17,13 @@ Dependencies:
 
 - A standard C/C++ compiler (clang, MSVC, gcc)
 - CMake
-- OpenSim ([binaries](https://simtk.org/home/opensim), [source](https://github.com/opensim-org/opensim-core))
-- (I built this against OpenSim4.2)
+- OpenSim ([binaries](https://simtk.org/home/opensim), [source](https://github.com/opensim-org/opensim-core) - I built this against OpenSim4.2)
 
 Build Scripts:
 
-(read these if you know what you are doing)
-
 | OS | Build Script |
 | - | - |
-| OSX | scripts/build_osx-catalina.sh |
+| OSX | [scripts/build_osx-catalina.sh](scripts/build_osx-catalina.sh) |
 
 
 # Running
@@ -38,12 +37,12 @@ opensim-cmd -L /path/to/library.so <cmd>
 
 Or in the GUI, which has some platform-dependent steps:
 
-- Windows: copy the library into the `plugins/` directory in your OpenSim
+- **Windows**: copy the library into the `plugins/` directory in your OpenSim
   install directory (e.g. `C:\OpenSim 4.2\plugins`). Make the `plugins/`
   directory if it doesn't already exist. Once you copy it there, boot up the
   GUI. You should be able to see the plugin in `Tools > User Plugins`
 
-- Mac/Linux: boot up the GUI and use the ScriptingShell to load the plugin. Open
+- **Mac/Linux**: boot up the GUI and use the ScriptingShell to load the plugin. Open
   the ScriptingShell tab (near the bottom) and type the path to the library
   **without the file suffix (e.g. .dylib)**:
 
@@ -53,6 +52,6 @@ modeling.Model.LoadOpenSimLibrary("/path/to/library")
 # e.g. modeling.Model.LoadOpenSimLibrary("/Applications/OpenSim 4.2/plugins/libReflexControllersPlugin")
 ```
 
-- Mac/Linux (cont.): any loading errors will appear in the (separate) `Messages`
+- **Mac/Linux (cont.)**: any loading errors will appear in the (separate) `Messages`
   tab. Check there if there's a problem
 
