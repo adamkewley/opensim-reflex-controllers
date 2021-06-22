@@ -27,12 +27,12 @@
 //============================================================================
 // INCLUDE
 //============================================================================
-#include "OpenSim\Simulation\Control\Controller.h"
-#include "OpenSim\Common\PiecewiseLinearFunction.h"
-#include "OpenSim\Simulation\Model\Model.h"
+#include <OpenSim/Simulation/Control/Controller.h>
+#include <OpenSim/Common/PiecewiseLinearFunction.h>
+#include <OpenSim/Simulation/Model/Model.h>
 
 // to export class as part of a plugin:
-#include "osimReflexesDLL.h" 
+#include "osimReflexesDLL.h"
 
 namespace OpenSim {
 
