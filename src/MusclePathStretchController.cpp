@@ -73,7 +73,7 @@ MusclePathStretchController::MusclePathStretchController(double rest_length, dou
  *
  * All properties are added to the property set. Once added, they can be
  * read in and written to files.
- ____________________________________________________________________________
+ ____________________________________________________________________________*/
 
 
  /**
@@ -90,21 +90,20 @@ void MusclePathStretchController::connectToModel(Model &model)
 {
 	Super::connectToModel(model);
 
-	// get the list of actuators assigned to the reflex controller
-	Set<Actuator>& actuators = updActuators();
+    Set<const Actuator>& actuators = updActuators();
 
-	int cnt=0;
- 
-	while(cnt < actuators.getSize()){
-		Muscle *musc = dynamic_cast<Muscle*>(&actuators[cnt]);
-		// control muscles only
-		if(!musc){
-			cout << "WARNING - controller named " << this->getName() << " assigned a non-muscle actuator";
-			cout << actuators[cnt].getName() << " which will be ignored." << endl;
-			actuators.remove(cnt);
-		}else
-			cnt++;
-	}
+    // remove non-muscle actuators
+    for (int i = 0; i < actuators.getSize(); ++i) {
+        const Actuator& a = actuators[i];
+        const Muscle* maybeMuscle = dynamic_cast<const Muscle*>(&a);
+
+        if (!maybeMuscle) {
+            std::cout << "WARNING - controller named " << this->getName() << " assigned a non-muscle actuator"
+                      << a.getName() << " which will be ignored."
+                      << std::endl;
+            actuators.remove(i--);
+        }
+    }
 }
 
 //=============================================================================
@@ -123,7 +122,7 @@ void MusclePathStretchController::computeControls(const State& s, Vector &contro
 	double time = s.getTime();
 
 	// get the list of actuators assigned to the reflex controller
-	const Set<Actuator>& actuators = getActuatorSet();
+    const Set<const Actuator>& actuators = getActuatorSet();
 
 	// save resused controller parameter
 	double rest_length = get_normalized_rest_length();

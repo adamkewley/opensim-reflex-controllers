@@ -70,7 +70,7 @@ ReflexController::ReflexController(double gain)
  *
  * All properties are added to the property set. Once added, they can be
  * read in and written to files.
- ____________________________________________________________________________
+ ____________________________________________________________________________*/
 
 
  /**
@@ -86,12 +86,12 @@ void ReflexController::connectToModel(Model &model)
 	Super::connectToModel(model);
 
 	// get the list of actuators assigned to the reflex controller
-	Set<Actuator>& actuators = updActuators();
+    Set<const Actuator>& actuators = updActuators();
 
 	int cnt=0;
  
 	while(cnt < actuators.getSize()){
-		Muscle *musc = dynamic_cast<Muscle*>(&actuators[cnt]);
+        const Muscle *musc = dynamic_cast<const Muscle*>(&actuators[cnt]);
 		// control muscles only
 		if(!musc){
 			cout << "ReflexController:: WARNING- controller assigned a non-muscle actuator ";
@@ -118,7 +118,7 @@ void ReflexController::computeControls(const State& s, Vector &controls) const
 	double time = s.getTime();
 
 	// get the list of actuators assigned to the reflex controller
-	const Set<Actuator>& actuators = getActuatorSet();
+    const Set<const Actuator>& actuators = getActuatorSet();
 
 	// muscle lengthening speed
 	double speed = 0;

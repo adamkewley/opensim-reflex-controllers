@@ -74,10 +74,10 @@ MuscleFiberStretchController::MuscleFiberStretchController(double gain)
  *
  * All properties are added to the property set. Once added, they can be
  * read in and written to files.
- ____________________________________________________________________________
+ ____________________________________________________________________________*/
 
 
- /**
+/**
  * Construct Properties
  */
 /*
@@ -111,7 +111,7 @@ void MuscleFiberStretchController::computeControls(const State& s, Vector &contr
 	double time = s.getTime();
 
 	// get the list of actuators assigned to the reflex controller
-	const Set<Actuator>& actuators = getActuatorSet();
+    const Set<const Actuator>& actuators = getActuatorSet();
 
 	// save resused controller parameter
 	double rest_length = get_normalized_rest_length();

@@ -96,8 +96,6 @@ namespace OpenSim {
 	private:
 		// Connect properties to local pointers.  */
 		void constructProperties();
-		// ModelComponent interface to add computational elements to the SimTK system
-		void addToSystem(SimTK::MultibodySystem& system) const;
 		// ModelComponent interface to connect this component to its model
 		void connectToModel(Model& aModel);
 		//=============================================================================
