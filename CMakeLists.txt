@@ -19,20 +19,25 @@ if(TRUE)
         REQUIRED
 
         # these PATHS aren't strictly necessary if OpenSim is installed
-        # correctly. They are just here in case CMake wants some extra hints.
+        # correctly. They are just here as hard-coded guesses
         PATHS
-            "C:\\OpenSim"  # Windows: typical system-wide
-            "C:\\Program Files\\OpenSim"  # Windows: smartass location
-            "C:\\Program Files (x86)\\OpenSim"  # Windows: dumbass location
-            "/Applications/OpenSim /"  # Mac: typical system-wide
+            # Windows (use the most recent one first)
+            "C:\\OpenSim 4.4"
+            "C:\\OpenSim 4.3"
+            "C:\\OpenSim 4.2"
+            "C:\\OpenSim 4.1"
+            "C:\\OpenSim 3.2"
+            "C:\\OpenSim 3.1"
+            "C:\\OpenSim 3.0"
 
-        PATH_SUFFIXES
-            "3.0" " 3.0"
-            "3.1" " 3.1"
-            "3.2" " 3.2"
-            "4.0" " 4.0"
-            "4.1" " 4.1"
-            "4.2" " 4.2"
+            # Mac
+            "/Applications/OpenSim 4.4/"
+            "/Applications/OpenSim 4.3/"
+            "/Applications/OpenSim 4.2/"
+            "/Applications/OpenSim 4.1/"
+            "/Applications/OpenSim 3.2/"
+            "/Applications/OpenSim 3.1/"
+            "/Applications/OpenSim 3.0/"
     )
 
     if(NOT DEFINED OpenSim_ROOT_DIR)
@@ -71,7 +76,7 @@ target_link_libraries(ReflexControllersPlugin PUBLIC
     SimTKsimbody
 )
 set_target_properties(ReflexControllersPlugin PROPERTIES
-    DEFINE_SYMBOL OSIMREFLEX_EXPORT
+    DEFINE_SYMBOL OSIMREFLEXES_EXPORTS
     PROJECT_LABEL "Libraries - ReflexControllerPlugin"
 )
 target_compile_features(ReflexControllersPlugin PUBLIC cxx_std_11)
